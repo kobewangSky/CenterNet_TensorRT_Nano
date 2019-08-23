@@ -67,6 +67,3 @@ class COCO(data.Dataset):
 
     def __len__(self):
         return self.num_samples
-
-    def run_eval(self):
-        coco_eval = COCOeval()
