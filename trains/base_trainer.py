@@ -75,7 +75,6 @@ class BaseTrainer(object):
                 if k != 'meta':
                     batch[k] = batch[k].to(device=opt.device, non_blocking=True)
             output, loss, loss_stats = model_with_loss(batch)
-            loss = loss.mean()
             losses.append(loss)
             avg_loss = sum(losses) / len(losses)
             print('phase = {}, losses = {}'.format(phase, avg_loss))
@@ -111,8 +110,8 @@ class BaseTrainer(object):
                 self.save_result(output, batch, results)
             del output, loss, loss_stats
 
-            bar.finish()
-            ret = {k: v.avg for k, v in avg_loss_stats.items()}
-            ret['time'] = bar.elapsed_td.total_seconds() / 60.
-            return ret, results
+        bar.finish()
+        ret = {k: v.avg for k, v in avg_loss_stats.items()}
+        ret['time'] = bar.elapsed_td.total_seconds() / 60.
+        return ret, results
 

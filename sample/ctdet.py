@@ -13,6 +13,12 @@ class CTDetDataset(data.Dataset):
         bbox = np.array([box[0], box[1], box[0] + box[2], box[1] + box[3]], dtype=np.float32)
         return bbox
 
+    def _get_border(self, border, size):
+        i = 1
+        while size - border // i <= border // i:
+            i *= 2
+        return border // i
+
     def __getitem__(self, index):
         img_id = self.images[index]
         file_name = self.coco.loadImgs(ids=[img_id])[0]['file_name']
@@ -107,20 +113,18 @@ class CTDetDataset(data.Dataset):
                 reg_mask[k] = 1
                 cat_spec_wh[k, cls_id * 2: cls_id * 2 + 2] = wh[k]
                 cat_spec_mask[k, cls_id * 2: cls_id * 2 + 2] = 1
-                if self.opt.dense_wh:
-                    draw_dense_reg(dense_wh, hm.max(axis=0), ct_int, wh[k], radius)
                 gt_det.append([ct[0] - w / 2, ct[1] - h / 2,
                                ct[0] + w / 2, ct[1] + h / 2, 1, cls_id])
 
         ret = {'input': inp, 'hm': hm, 'reg_mask': reg_mask, 'ind': ind, 'wh': wh}
-        if self.opt.dense_wh:
-            hm_a = hm.max(axis=0, keepdims=True)
-            dense_wh_mask = np.concatenate([hm_a, hm_a], axis=0)
-            ret.update({'dense_wh': dense_wh, 'dense_wh_mask': dense_wh_mask})
-            del ret['wh']
-        elif self.opt.cat_spec_wh:
-            ret.update({'cat_spec_wh': cat_spec_wh, 'cat_spec_mask': cat_spec_mask})
-            del ret['wh']
+        # if self.opt.dense_wh:
+        #     hm_a = hm.max(axis=0, keepdims=True)
+        #     dense_wh_mask = np.concatenate([hm_a, hm_a], axis=0)
+        #     ret.update({'dense_wh': dense_wh, 'dense_wh_mask': dense_wh_mask})
+        #     del ret['wh']
+        # elif self.opt.cat_spec_wh:
+        #     ret.update({'cat_spec_wh': cat_spec_wh, 'cat_spec_mask': cat_spec_mask})
+        #     del ret['wh']
         if self.opt.reg_offset:
             ret.update({'reg': reg})
         if self.opt.debug > 0 or not self.split == 'train':

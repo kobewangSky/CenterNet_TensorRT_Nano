@@ -6,21 +6,21 @@ import numpy as np
 import json
 
 class COCO(data.Dataset):
-    num_class_ = 80
-    default_resolution_ = [512, 512]
-    mean_ = np.array([0.40789654, 0.44719302, 0.47026115], dtype=np.float32).reshape(1, 1, 3)
-    std_ = np.array([0.28863828, 0.27408164, 0.27809835], dtype=np.float32).reshape(1, 1, 3)
+    num_classes = 80
+    default_resolution = [512, 512]
+    mean = np.array([0.40789654, 0.44719302, 0.47026115], dtype=np.float32).reshape(1, 1, 3)
+    std = np.array([0.28863828, 0.27408164, 0.27809835], dtype=np.float32).reshape(1, 1, 3)
 
     def __init__(self, opt, split):
         super(COCO, self).__init__()
 
-        self.data_dir = opt.data_path
-        self.image_dir = opt.image_path
+        self.data_dir = os.path.join(opt.data_dir, 'coco')
+        self.img_dir = os.path.join(self.data_dir, 'images', '{}2017'.format(split))
 
         if split == 'test':
             self.annot_path =os.path.join(self.data_dir, 'image_info_test-dev2017.json')
         else:
-            self.annot_path = os.path.join(self.data_dir, 'instances_train2017.json')
+            self.annot_path = os.path.join( self.data_dir, 'annotations','instances_{}2017.json').format(split)
 
         self.max_objs = 128
 
@@ -49,18 +49,27 @@ class COCO(data.Dataset):
             82, 84, 85, 86, 87, 88, 89, 90]
 
         self.cat_ids = {v: i for i, v in enumerate(self._valid_ids)}
-        self.data_rng =np.random.RandomState(123)
-        self.eig_val = np.array([0.2141788, 0.01817699, 0.00341571], dtype=np.float32)
+        self.voc_color = [(v // 32 * 64 + 64, (v // 8) % 4 * 64, v % 8 * 32) \
+                          for v in range(1, self.num_classes + 1)]
+        self._data_rng = np.random.RandomState(123)
+
+        self._eig_val = np.array([0.2141788, 0.01817699, 0.00341571],
+                                 dtype=np.float32)
+
         self._eig_vec = np.array([
             [-0.58752847, -0.69563484, 0.41340352],
             [-0.5832747, 0.00994535, -0.81221408],
             [-0.56089297, 0.71832671, 0.41158938]
         ], dtype=np.float32)
+
+        self.split = split
         self.opt = opt
 
+        print('==> initializing coco 2017 {} data.'.format(split))
         self.coco = coco.COCO(self.annot_path)
         self.images = self.coco.getImgIds()
         self.num_samples = len(self.images)
+
 
     def _to_float(self, x):
         return float("{:.2f}".format(x))

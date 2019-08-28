@@ -1,6 +1,7 @@
 import torch
 import numpy as np
 from trains.losses import RegL1Loss
+from trains.losses import FocalLoss
 from trains.base_trainer import BaseTrainer
 
 def _sigmoid(x):
@@ -10,7 +11,7 @@ def _sigmoid(x):
 class CtdetLoss(torch.nn.Module):
     def __init__(self, opt):
         super(CtdetLoss, self).__init__()
-        self.crit = torch.nn.MSELoss()
+        self.crit = FocalLoss()
         self.crit_reg = RegL1Loss()
         self.crit_wh = torch.nn.L1Loss(reduction='sum')
         self.opt = opt
@@ -34,6 +35,9 @@ class CtdetLoss(torch.nn.Module):
 
         loss_stats = {'loss': loss, 'hm_loss': hm_loss,
                       'wh_loss': wh_loss, 'off_loss': off_loss}
+
+
+
         return loss, loss_stats
 
 class CtdetTrainer(BaseTrainer):

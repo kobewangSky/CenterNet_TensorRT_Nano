@@ -2,7 +2,7 @@ import torch
 import torch.utils.data
 from sample.ctdet import CTDetDataset
 from datasets.cocodataset import COCO
-from utils.opts import opt
+from utils.opts import opts
 from Pytorch_model.model import create_model
 from Pytorch_model.model import load_model
 from trains.ctdet import CtdetTrainer
@@ -20,10 +20,10 @@ def main(opt):
     torch.manual_seed(opt.seed)
     torch.backends.cudnn.benchmark = True
     Dataset = get_dataset()
-    opt = opt().update_dataset_info_and_set_heads(opt, Dataset)
+    opt = opts().update_dataset_info_and_set_heads(opt, Dataset)
     print(opt)
 
-    os.environ['CUDA_VISIBLE_DEVICES'] = 0
+    os.environ['CUDA_VISIBLE_DEVICES'] = '0'
     opt.device = 'cuda'
 
     print('Creating model...')
@@ -64,12 +64,21 @@ def main(opt):
     best = 1e10
     losses = deque(maxlen=1000)
 
+    if not os.path.exists(os.path.join(opt.root_dir, 'exp')):
+        os.mkdir(os.path.join(opt.root_dir, 'exp'))
+    if not os.path.exists(opt.exp_dir):
+        os.mkdir(opt.exp_dir)
+    if not os.path.exists(opt.save_dir):
+        os.mkdir(opt.save_dir)
+
+
+
     for epoch in range(start_epoch + 1, opt.num_epochs + 1):
         mark = epoch if opt.save_all else 'last'
 
         log_dict_train, _ = trainer.train(epoch, train_loader, losses)
         avg_loss = sum(losses) / len(losses)
-        print('loss: {}, loss: {} |'.format(epoch, avg_loss))
+        print('epoch: {}, loss: {} |'.format(epoch, avg_loss))
         if opt.val_intervals > 0 and epoch % opt.val_intervals == 0:
             save_model(os.path.join(opt.save_dir, 'model_{}.pth'.format(mark)),
                        epoch, model, optimizer)
