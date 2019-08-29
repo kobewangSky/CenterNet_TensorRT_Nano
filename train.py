@@ -1,7 +1,6 @@
 import torch
 import torch.utils.data
 from sample.ctdet import CTDetDataset
-from datasets.cocodataset import COCO
 from utils.opts import opts
 from Pytorch_model.model import create_model
 from Pytorch_model.model import load_model
@@ -11,16 +10,10 @@ from collections import deque
 from Pytorch_model.model import save_model
 from utils.opts import opts
 
-def get_dataset():
-  class Dataset(COCO, CTDetDataset):
-    pass
-  return Dataset
-
 def main(opt):
     torch.manual_seed(opt.seed)
     torch.backends.cudnn.benchmark = True
-    Dataset = get_dataset()
-    opt = opts().update_dataset_info_and_set_heads(opt, Dataset)
+    opt = opts().update_dataset_info_and_set_heads(opt, CTDetDataset)
     print(opt)
 
     os.environ['CUDA_VISIBLE_DEVICES'] = '0'
@@ -39,7 +32,7 @@ def main(opt):
 
     print('Setting up data...')
     val_loader = torch.utils.data.DataLoader(
-        Dataset(opt, 'val'),
+        CTDetDataset(opt, 'val'),
         batch_size=1,
         shuffle=False,
         num_workers=1,
@@ -52,7 +45,7 @@ def main(opt):
         return
 
     train_loader = torch.utils.data.DataLoader(
-        Dataset(opt, 'train'),
+        CTDetDataset(opt, 'train'),
         batch_size=opt.batch_size,
         shuffle=True,
         num_workers=opt.num_workers,
