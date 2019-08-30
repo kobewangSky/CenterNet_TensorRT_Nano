@@ -20,7 +20,8 @@ def main(opt):
     opt.device = 'cuda'
 
     print('Creating model...')
-    model = create_model(18, opt.heads, opt.head_conv)
+
+    model = create_model(opt.backbone, opt.heads, opt.head_conv)
     optimizer = torch.optim.Adam(model.parameters(), lr=opt.lr)
 
     start_epoch = 0

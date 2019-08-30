@@ -3,16 +3,7 @@ from utils.utils import AverageMeter
 from progress.bar import Bar
 import time
 
-def debug(self, batch, output, iter_id):
-    raise NotImplementedError
 
-
-def save_result(self, output, batch, results):
-    raise NotImplementedError
-
-
-def _get_losses(self, opt):
-    raise NotImplementedError
 
 class ModelWithLoss(torch.nn.Module):
     def __init__(self, model, loss):
@@ -114,4 +105,13 @@ class BaseTrainer(object):
         ret = {k: v.avg for k, v in avg_loss_stats.items()}
         ret['time'] = bar.elapsed_td.total_seconds() / 60.
         return ret, results
+
+    def debug(self, batch, output, iter_id):
+        raise NotImplementedError
+
+    def save_result(self, output, batch, results):
+        raise NotImplementedError
+
+    def _get_losses(self, opt):
+        raise NotImplementedError
 

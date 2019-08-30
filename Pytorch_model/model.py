@@ -1,8 +1,16 @@
 import torch
 from Pytorch_model.resnet import get_pose_net
+from Pytorch_model.resnet_dcn import get_pose_net_dcn
 
-def create_model(arch, heads, head_conv):
-    model = get_pose_net(num_layers = arch, heads = heads, head_conv = head_conv)
+
+def create_model(arch : str, heads, head_conv):
+
+    layers = int(arch[(arch.find('_') + 1):])
+
+    if 'dcn' in arch:
+        model = get_pose_net_dcn(num_layers = layers, heads = heads, head_conv = head_conv)
+    else:
+        model = get_pose_net(num_layers=layers, heads=heads, head_conv=head_conv)
     return model
 
 def load_model(model, model_path, optimizer=None, resume=False, lr = None, lr_step=None):

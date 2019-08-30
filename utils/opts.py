@@ -26,6 +26,10 @@ class opts(object):
                                       'set load_model to model_last.pth '
                                       'in the exp dir if load_model is empty.')
 
+        self.parser.add_argument('--backbone', default='dla_34',
+                                 help='model architecture. Currently tested'
+                                      'res_18 | resdcn_18')
+
         # input
         self.parser.add_argument('--input_res', type=int, default=-1,
                                  help='input height and width. -1 for default from '
