@@ -56,7 +56,6 @@ def main(opt):
 
     print('Starting training...')
     best = 1e10
-    losses = deque(maxlen=1000)
 
     if not os.path.exists(os.path.join(opt.root_dir, 'exp')):
         os.mkdir(os.path.join(opt.root_dir, 'exp'))
@@ -70,14 +69,13 @@ def main(opt):
     for epoch in range(start_epoch + 1, opt.num_epochs + 1):
         mark = epoch if opt.save_all else 'last'
 
-        log_dict_train, _ = trainer.train(epoch, train_loader, losses)
-        avg_loss = sum(losses) / len(losses)
-        print('epoch: {}, loss: {} |'.format(epoch, avg_loss))
+        log_dict_train, _ = trainer.train(epoch, train_loader)
+        #print('epoch: {}, loss: {} |'.format(epoch, avg_loss))
         if opt.val_intervals > 0 and epoch % opt.val_intervals == 0:
             save_model(os.path.join(opt.save_dir, 'model_{}.pth'.format(mark)),
                        epoch, model, optimizer)
             with torch.no_grad():
-                log_dict_val, preds = trainer.val(epoch, val_loader, losses)
+                log_dict_val, preds = trainer.val(epoch, val_loader)
             if log_dict_val[opt.metric] < best:
                 best = log_dict_val[opt.metric]
                 save_model(os.path.join(opt.save_dir, 'model_best.pth'),
