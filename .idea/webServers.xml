@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="5023b20a-db5c-423b-944d-8c939040ed82" name="6091" url="http://140.114.27.158">
+        <fileTransfer host="140.114.27.158" port="6091" rootFolder="/home/kobe" accessType="SFTP">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+          <option name="port" value="6091" />
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>
