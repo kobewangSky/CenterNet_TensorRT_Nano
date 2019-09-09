@@ -1,6 +1,6 @@
 import torch
 import torch.utils.data
-from sample.ctdet import CTDetDataset
+from dataset.ctdet import CTDetDataset
 from utils.opts import opts
 from Pytorch_model.model import create_model
 from Pytorch_model.model import load_model
@@ -16,7 +16,7 @@ def main(opt):
     opt = opts().update_dataset_info_and_set_heads(opt, CTDetDataset)
     print(opt)
 
-    os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+    os.environ['CUDA_VISIBLE_DEVICES'] = opt.gpus_str
     opt.device = 'cuda'
 
     print('Creating model...')
