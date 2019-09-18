@@ -9,8 +9,12 @@ import os
 from collections import deque
 from Pytorch_model.model import save_model
 from utils.opts import opts
+import wandb
 
 def main(opt):
+    wandb.init(project="centernet_easy")
+
+
     torch.manual_seed(opt.seed)
     torch.backends.cudnn.benchmark = True
     opt = opts().update_dataset_info_and_set_heads(opt, CTDetDataset)
@@ -22,6 +26,7 @@ def main(opt):
     print('Creating model...')
 
     model = create_model(opt.backbone, opt.heads, opt.head_conv)
+    wandb.watch(model)
     optimizer = torch.optim.Adam(model.parameters(), lr=opt.lr)
 
     start_epoch = 0
@@ -69,13 +74,13 @@ def main(opt):
     for epoch in range(start_epoch + 1, opt.num_epochs + 1):
         mark = epoch if opt.save_all else 'last'
 
-        log_dict_train, _ = trainer.train(epoch, train_loader)
+        log_dict_train, _ = trainer.train(epoch, train_loader, wandb)
         #print('epoch: {}, loss: {} |'.format(epoch, avg_loss))
         if opt.val_intervals > 0 and epoch % opt.val_intervals == 0:
             save_model(os.path.join(opt.save_dir, 'model_{}.pth'.format(mark)),
                        epoch, model, optimizer)
             with torch.no_grad():
-                log_dict_val, preds = trainer.val(epoch, val_loader)
+                log_dict_val, preds = trainer.val(epoch, val_loader, wandb)
             if log_dict_val[opt.metric] < best:
                 best = log_dict_val[opt.metric]
                 save_model(os.path.join(opt.save_dir, 'model_best.pth'),
@@ -94,3 +99,5 @@ def main(opt):
 if __name__ == '__main__':
     opt = opts().init()
     main(opt)
+
+#ctdet --exp_id kobe_resdcn18 --backbone resdcn_18 --batch_size 30 --master_batch 2 --lr 5e-4 --gpus 0 --num_workers 2

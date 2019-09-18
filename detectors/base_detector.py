@@ -74,7 +74,7 @@ class BaseDetector(object):
             meta = {k: v.numpy()[0] for k, v in meta.items()}
             images = images.to(self.opt.device)
 
-            output, dets, forward_time = self.process(images, return_time=True)
+            output, dets = self.process(images, return_time=True)
             dets = self.post_process(dets, meta, scale)
             detections.append(dets)
 

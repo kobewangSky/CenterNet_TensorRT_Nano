@@ -119,13 +119,17 @@ class CTDetDataset(data.Dataset):
                     detections.append(detection)
         return detections
 
-    def save_results(self, results, save_dir):
-        json.dump(self.convert_eval_format(results), open('{}/result.json'.format(save_dir), 'w'))
+    def save_results(self, results, save_file_path):
+        json.dump(self.convert_eval_format(results), open(save_file_path, 'w'))
 
 
-    def run_eval(self, results, save_dir):
-        #self.save_results(results, save_dir)
-        coco_dets = self.convert_eval_format(results)
+    def run_eval(self, results, save_file_path):
+
+        if os.path.exists(save_file_path):
+            coco_dets = self.coco.loadRes(save_file_path)
+        else:
+            self.save_results(results, save_file_path)
+            coco_dets = self.coco.loadRes(save_file_path)
         coco_eval = COCOeval(self.coco, coco_dets, "bbox")
         coco_eval.evaluate()
         coco_eval.accumulate()
