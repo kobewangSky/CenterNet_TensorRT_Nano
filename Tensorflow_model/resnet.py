@@ -1,6 +1,6 @@
 import tensorflow as tf
 import numpy as np
-from Tensorflow_model.utils import BasicBlock_tf, Bottleneck_tf
+from Tensorflow_model.utils import BasicBlock_tf, Bottleneck_tf, Deconv_tf
 BN_MOMENTUM = 0.1
 
 
@@ -12,10 +12,10 @@ class PoseResNet_tf(tf.keras.Model):
 
         super(PoseResNet_tf, self).__init__()
 
-        self.conv1 = tf.keras.layers.Conv2D(64, (7, 7), strides = 2, padding = 3, bias = False)
+        self.conv1 = tf.keras.layers.Conv2D(64, (7, 7), strides = 2, padding = 'same')
         self.bn1 = tf.keras.layers.BatchNormalization(64, momentum=BN_MOMENTUM)
-        self.relu = tf.keras.layers.ReLU(inplace=True)
-        self.maxpool = tf.keras.layers.MaxPooling2D((3, 3), strides = 2, padding = 1)
+        self.relu = tf.keras.layers.ReLU()
+        self.maxpool = tf.keras.layers.MaxPooling2D((3, 3), strides = 2, padding = 'same')
 
         self.layer1 = self._make_layer(block, 64, layers[0])
         self.layer2 = self._make_layer(block, 128, layers[1], stride=2)
@@ -29,15 +29,15 @@ class PoseResNet_tf(tf.keras.Model):
         for head in sorted(self.heads):
             num_output = self.heads[head]
             if head_conv > 0:
-                fc = tf.keras.models.Sequential(
-                    tf.keras.layers.Conv2D(head_conv, (3, 3), padding=1, bias=True),
-                    tf.keras.layers.ReLU(inplace=True),
-                    tf.keras.layers.Conv2D(num_output, (1, 1), stride=1, padding=0))
+                fc = tf.keras.models.Sequential([
+                    tf.keras.layers.Conv2D(head_conv, (3, 3), padding='same'),
+                    tf.keras.layers.ReLU(),
+                    tf.keras.layers.Conv2D(num_output, (1, 1), strides=1, padding='same')])
             else:
                 fc = tf.keras.layers.Conv2D(
                     num_output,
                     (1, 1),
-                    stride=1,
+                    strides=1,
                     padding=0
                 )
             self.__setattr__(head, fc)
@@ -48,7 +48,7 @@ class PoseResNet_tf(tf.keras.Model):
         downsample = None
         if stride != 1 or self.inplanes != planes * block.expansion:
             downsample = tf.keras.models.Sequential(
-                tf.keras.layers.Conv2D(planes * block.expansion, (1, 1), stride=stride, bias=False),
+                tf.keras.layers.Conv2D(planes * block.expansion, (1, 1), strides = stride),
                 tf.keras.layers.BatchNormalization(planes * block.expansion, momentum=BN_MOMENTUM),
             )
 
@@ -58,18 +58,19 @@ class PoseResNet_tf(tf.keras.Model):
         for i in range(1, blocks):
             layers.append(block(self.inplanes, planes))
 
-        return tf.keras.models.Sequential(*layers)
+        return tf.keras.models.Sequential(layers)
 
 
     def _make_deconv_layer(self):
         layers = []
         for i in range(3):
-            layers.append( tf.keras.layers.Conv2DTranspose( 256, (4, 4), stride = 2, padding = 1, output_padding = 0, bias = False ))
+            #layers.append(Deconv_tf(256, 2, 'same'))
+            layers.append( tf.keras.layers.Conv2DTranspose( 256, (4, 4), strides = 2, padding = 'same'))
             layers.append(tf.keras.layers.BatchNormalization(256, momentum=BN_MOMENTUM))
-            layers.append(tf.keras.layers.ReLU(inplace=True))
+            layers.append(tf.keras.layers.ReLU())
             self.inplanes = 256
 
-        return tf.keras.models.Sequential(*layers)
+        return tf.keras.models.Sequential(layers)
 
     def call(self, input_tensor, training=False):
         x = self.conv1(input_tensor)
@@ -99,5 +100,5 @@ def get_pose_net(num_layers, heads, head_conv):
   block_class, layers = resnet_spec[num_layers]
 
   model = PoseResNet_tf(block_class, layers, heads, head_conv=head_conv)
-  model.init_weights(num_layers, pretrained=True)
+  #model.init_weights(num_layers, pretrained=True)
   return model

@@ -80,6 +80,7 @@ def dict_to_coco_example(img_data):
         xmax.append(bbox[0] + bbox[2])
         ymin.append(bbox[1])
         ymax.append(bbox[1] + bbox[3])
+    label = img_data['labels']
 
     example = tf.train.Example(features=tf.train.Features(feature={
         'image/height': utils.int64_feature(img_data['height']),
@@ -88,7 +89,7 @@ def dict_to_coco_example(img_data):
         'image/object/bbox/xmax': utils.float_list_feature(xmax),
         'image/object/bbox/ymin': utils.float_list_feature(ymin),
         'image/object/bbox/ymax': utils.float_list_feature(ymax),
-        'image/object/class/label': utils.int64_list_feature(img_data['labels']),
+        'image/object/class/label': utils.int64_list_feature(label),
         'image/encoded': utils.bytes_feature(img_data['pixel_data']),
         'image/format': utils.bytes_feature('jpeg'.encode('utf-8')),
     }))

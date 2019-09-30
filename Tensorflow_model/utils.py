@@ -9,11 +9,11 @@ def conv3x3_tf(in_planes, out_planes, stride = 1):
 
 class BasicBlock_tf(tf.keras.Model):
     expansion = 1
-    def __init__(self, in_planes, out_planes, stride, downsample = None):
+    def __init__(self, in_planes, out_planes, stride = 1, downsample = None):
         super(BasicBlock_tf, self).__init__()
         self.conv1 = conv3x3_tf(in_planes, out_planes, stride)
         self.bn1 = layers.BatchNormalization(out_planes, momentum=BN_MOMENTUM)
-        self.relu = layers.ReLU(inplace=True)
+        self.relu = layers.ReLU()
         self.conv2 = conv3x3_tf(out_planes, out_planes)
         self.bn2 = layers.BatchNormalization(out_planes, momentum=BN_MOMENTUM)
         self.downsample = downsample
@@ -50,7 +50,7 @@ class Bottleneck_tf(tf.keras.Model):
         self.conv3 = layers.Conv2D(planes * self.expansion, (1, 1), strides = stride)
 
         self.bn3 = layers.BatchNormalization(planes * self.expansion, momentum=BN_MOMENTUM)
-        self.relu = layers.ReLU(inplace=True)
+        self.relu = layers.ReLU()
         self.downsample = downsample
         self.stride = stride
 
@@ -73,5 +73,24 @@ class Bottleneck_tf(tf.keras.Model):
 
         out += residual
         out = self.relu(out)
+
+        return out
+
+
+class Deconv_tf(tf.keras.Model):
+    expansion = 4
+
+    def __init__(self, planes, stride=1, padding = 'same'):
+        super(Deconv_tf, self).__init__()
+        self.conv1 = layers.Conv2DTranspose(planes, (4, 4), strides = stride, padding = padding)
+
+        self.BN = (tf.keras.layers.BatchNormalization(planes, momentum=0.1))
+        self.Relu1 = (tf.keras.layers.ReLU())
+
+    def call(self, input_tensor ,training = False):
+
+        out = self.conv1(input_tensor)
+        out = self.BN(out, training = training)
+        out = self.Relu1(out)
 
         return out

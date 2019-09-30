@@ -1,15 +1,17 @@
 import tensorflow as tf
 import numpy as np
-
 from Tensorflow_model.model import create_model
 from utils.opts import opts
 import wandb
+from tf_dataset.tf_ctdet import TF_ctdet
+import os
+from TF_train.ctdet import CtdetLoss
 
 
 def main(opt):
-    wandb.init(project="centernet_easy")
+    wandb.init(project="centernet_easy_tf")
 
-    opt = opts().update_dataset_info_and_set_heads(opt, CTDetDataset)
+    opt = opts().update_dataset_info_and_set_heads(opt, TF_ctdet)
     print(opt)
 
     os.environ['CUDA_VISIBLE_DEVICES'] = opt.gpus_str
@@ -18,6 +20,14 @@ def main(opt):
     print('Creating model...')
 
     model = create_model(opt.backbone, opt.heads, opt.head_conv)
+    optimizer = tf.keras.optimizers.Adam(learning_rate = 5e-4)
+    Custom_loss = CtdetLoss(opt)
+
+    model.compile(loss=Custom_loss, optimizer= optimizer)
+
+
+
+
     wandb.watch(model)
     optimizer = torch.optim.Adam(model.parameters(), lr=opt.lr)
 
