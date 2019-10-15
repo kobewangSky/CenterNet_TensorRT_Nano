@@ -2,6 +2,7 @@ import torch
 from utils.utils import AverageMeter
 from progress.bar import Bar
 import time
+from Pytorch_model.data_paeallel import DataParallel
 
 
 
@@ -27,7 +28,9 @@ class BaseTrainer(object):
 
     def set_device(self, gpus,  chunk_sizes, device ):
         if len(gpus) > 1:
-            assert False, 'ToDo, muti gpu'
+            self.model_with_loss = DataParallel(
+                self.model_with_loss, device_ids=gpus,
+                chunk_sizes=chunk_sizes).to(device)
         else:
             self.model_with_loss = self.model_with_loss.to(device)
 
@@ -47,6 +50,8 @@ class BaseTrainer(object):
         if phase == 'train':
             model_with_loss.train()
         else:
+            if len(self.opt.gpus) > 1:
+                model_with_loss = self.model_with_loss.module
             model_with_loss.eval()
             torch.cuda.empty_cache()
 
@@ -66,6 +71,7 @@ class BaseTrainer(object):
                 if k != 'meta':
                     batch[k] = batch[k].to(device=opt.device, non_blocking=True)
             output, loss, loss_stats = model_with_loss(batch)
+            loss = loss.mean()
             #print('phase = {}, losses = {}'.format(phase, avg_loss))
 
             if phase == 'train':

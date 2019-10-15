@@ -192,7 +192,8 @@ class opts(object):
             opt.gpus = [opt.gpus[0]]
             opt.master_batch_size = -1
 
-        opt.master_batch_size = opt.batch_size // len(opt.gpus)
+        if opt.master_batch_size == -1:
+            opt.master_batch_size = opt.batch_size // len(opt.gpus)
 
         rest_batch_size = (opt.batch_size - opt.master_batch_size)
         opt.chunk_sizes = [opt.master_batch_size]
