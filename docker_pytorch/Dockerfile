@@ -41,5 +41,5 @@ RUN /bin/bash -c "source /opt/conda/etc/profile.d/conda.sh"\
 
 CMD ["/usr/sbin/sshd", "-D"]
 
-#docker run --shm-size 24G --gpus all -p 6667:22 -v CenterNet_Easy_Pytorch:~/workspace/CenterNet_Easy_Pytorch --name centernet centernet
+#docker run --shm-size 24G --gpus all -p 6667:22 -v CenterNet_Easy_Pytorch:~/workspace/CenterNet_Easy_Pytorch --name centernet_pytorch bluce54088/centernet_pytorch
 #

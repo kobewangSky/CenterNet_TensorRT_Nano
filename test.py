@@ -6,7 +6,6 @@ from detectors.ctdet import CtdetDetector
 from detectors.base_detector import BaseDetector
 from dataset.ctdet import CTDetDataset
 from utils.opts import opts
-import tqdm
 import json
 import time
 

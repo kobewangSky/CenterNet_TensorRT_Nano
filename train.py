@@ -100,4 +100,4 @@ if __name__ == '__main__':
     opt = opts().init()
     main(opt)
 
-#ctdet --exp_id kobe_resdcn18 --backbone resdcn_18 --batch_size 30 --master_batch 2 --lr 5e-4 --gpus 0 --num_workers 2
+#ctdet --exp_id coco_res18 --backbone res_18 --batch_size 90 --master_batch 24 --lr 5e-4 --gpus 0,1,2 --num_workers 2 --resume
