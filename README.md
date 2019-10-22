@@ -1,1 +1,1 @@
-# CenterNet_Easy_Pytorch
+# CenterNet_edge
