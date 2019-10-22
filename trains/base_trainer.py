@@ -96,8 +96,6 @@ class BaseTrainer(object):
                 if iter_id % opt.print_iter == 0:
                     print('{}/{}| {}'.format(opt.task, opt.exp_id, Bar.suffix))
             else:
-                if wandb != None:
-                    wandb.log({"{} loss".format(phase): avg_loss_stats['loss'].avg})
                 bar.next()
 
             if opt.debug > 0:

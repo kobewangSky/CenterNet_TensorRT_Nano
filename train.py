@@ -75,12 +75,16 @@ def main(opt):
         mark = epoch if opt.save_all else 'last'
 
         log_dict_train, _ = trainer.train(epoch, train_loader, wandb)
+        if wandb != None:
+            wandb.log({"{} loss".format('train'): log_dict_val[opt.metric]})
         #print('epoch: {}, loss: {} |'.format(epoch, avg_loss))
         if opt.val_intervals > 0 and epoch % opt.val_intervals == 0:
             save_model(os.path.join(opt.save_dir, 'model_{}.pth'.format(mark)),
                        epoch, model, optimizer)
             with torch.no_grad():
                 log_dict_val, preds = trainer.val(epoch, val_loader, wandb)
+                if wandb != None:
+                    wandb.log({"{} loss".format('val'): log_dict_val[opt.metric]})
             if log_dict_val[opt.metric] < best:
                 best = log_dict_val[opt.metric]
                 save_model(os.path.join(opt.save_dir, 'model_best.pth'),
