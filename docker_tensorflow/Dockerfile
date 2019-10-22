@@ -6,6 +6,9 @@ RUN pip install --upgrade pip\
 && apt-get update\
 && apt-get install net-tools\
 && apt-get install -y git\
+&& apt-get install -y libglib2.0-0\
+&& apt-get install -y libsm6 libxext6\
+&& apt-get install -y libxrender-dev\
 && apt-get install -y openssh-server\
 && mkdir /var/run/sshd\
 && echo 'root:2012620126' | chpasswd\
@@ -39,5 +42,5 @@ RUN make\
 
 CMD ["/usr/sbin/sshd", "-D"]
 
-#docker run --shm-size 24G --gpus all -p 6668:22 -v CenterNet_Easy_Pytorch:~/workspace/CenterNet_Easy_Pytorch --name centernet_tensorflow bluce54088/centernet_tensorflow
+#docker run --shm-size 24G --gpus all -p 6667:22 -v CenterNet_Easy_Pytorch:/CenterNet_Easy_Pytorch --name centernet_tensorflow bluce54088/centernet_tensorflow
 #

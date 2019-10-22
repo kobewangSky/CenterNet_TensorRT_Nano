@@ -64,7 +64,6 @@ def load_coco_dection_dataset(imgs_dir, annotations_filepath, shuffle_img = True
         coco_data.append(img_info)
     return coco_data
 
-
 def dict_to_coco_example(img_data):
     """Convert python dictionary formath data of one image to tf.Example proto.
     Args:
@@ -131,7 +130,7 @@ def main(opt):
         Savefilepath_temp = os.path.join(os.path.dirname(opt.output_filepath), FileName_list[0]) + '_{}.'.format(Savefile) + FileName_list[1]
 
 
-        tfrecord_writer = tf.python_io.TFRecordWriter(Savefilepath_temp)
+        tfrecord_writer = tf.compat.v1.python_io.TFRecordWriter(Savefilepath_temp)
 
         start = end
         if Savefile == opt.batch_size:

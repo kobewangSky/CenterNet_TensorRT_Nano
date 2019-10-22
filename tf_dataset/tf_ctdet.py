@@ -15,7 +15,7 @@ class TF_ctdet(object):
     mean = np.array([0.40789654, 0.44719302, 0.47026115], dtype=np.float32).reshape(1, 1, 3)
     std = np.array([0.28863828, 0.27408164, 0.27809835], dtype=np.float32).reshape(1, 1, 3)
 
-    def GetTFRecordData(file_path_list, batch_size ):
+    def GetTFRecordData(self, file_path_list, batch_size ):
 
         raw_dataset = tf.data.TFRecordDataset(file_path_list)
 
@@ -83,10 +83,10 @@ class TF_ctdet(object):
 # image = tf.decode_raw(features['image/encoded'], tf.uint8 )
 # format = tf.decode_raw(features['image/format'], tf.uint8 )
 
-if __name__ == "__main__":
-    file_path_list = ['../data/coco/train_coco_1.record', '../data/coco/train_coco_2.record',
-                      '../data/coco/train_coco_3.record']
-    TF_ctdet = TF_ctdet()
-    Dataitem = TF_ctdet.GetTFRecordData(file_path_list, 6)
-    print(1)
+# if __name__ == "__main__":
+#     file_path_list = ['../data/coco/train_coco_1.record', '../data/coco/train_coco_2.record',
+#                       '../data/coco/train_coco_3.record']
+#     TF_ctdet = TF_ctdet()
+#     Dataitem = TF_ctdet.GetTFRecordData(file_path_list, 6)
+#     print(1)
 

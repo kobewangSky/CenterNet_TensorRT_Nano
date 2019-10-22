@@ -8,14 +8,16 @@ RUN pip install --upgrade pip\
 && pip install matplotlib\
 && pip install easydict\
 && pip install scipy\
-&& pip install wandb
+&& pip install wandb\
+&& pip install tensorflow-gpu==2.0
 #
 RUN apt-get update\
 && apt-get install -y openssh-server\
 && apt-get install net-tools\
 && apt-get install -y libglib2.0-0\
 && apt-get install -y libsm6 libxext6\
-&& apt-get install -y libxrender-dev
+&& apt-get install -y libxrender-dev\
+&& apt-get install -y git
 #
 #
 RUN mkdir /var/run/sshd\
@@ -39,5 +41,5 @@ RUN /bin/bash -c "source /opt/conda/etc/profile.d/conda.sh"\
 
 CMD ["/usr/sbin/sshd", "-D"]
 
-#docker run --shm-size 24G --gpus all -p 6667:22 -v CenterNet_Easy_Pytorch:/workspace/CenterNet_Easy_Pytorch --name centernet_pytorch bluce54088/centernet_pytorch
+#docker run --shm-size 24G --gpus all -p 6667:22 -v CenterNet_Easy_Pytorch:/workspace/CenterNet_Easy_Pytorch --name pytorch_tensorflow bluce54088/pytorch_tensorflow
 #
