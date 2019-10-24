@@ -1,4 +1,4 @@
-From pytorch/1.3-cuda10.1-cudnn7-runtime
+From pytorch/pytorch:1.3-cuda10.1-cudnn7-runtime
 RUN pip install --upgrade pip\
 && pip install Cython\
 && pip install torchvision\

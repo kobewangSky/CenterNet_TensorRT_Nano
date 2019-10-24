@@ -5,6 +5,7 @@ import torch
 from Pytorch_model.model import create_model
 from Pytorch_model.model import load_model
 from utils.image import get_affine_transform
+import time
 
 
 class BaseDetector(object):
@@ -64,22 +65,64 @@ class BaseDetector(object):
     def show_results(self, debugger, image, results):
         raise NotImplementedError
 
-    def run(self, image_or_path_or_tensor):
-        pre_processed_images = image_or_path_or_tensor
+    def run(self, image_or_path_or_tensor, meta=None):
+        # pre_processed_images = image_or_path_or_tensor
+        #
+        # detections = []
+        # for scale in self.scales:
+        #     images = pre_processed_images['images'][scale][0]
+        #     meta = pre_processed_images['meta'][scale]
+        #     meta = {k: v.numpy()[0] for k, v in meta.items()}
+        #     images = images.to(self.opt.device)
+        #
+        #     output, dets = self.process(images, return_time=True)
+        #     dets = self.post_process(dets, meta, scale)
+        #     detections.append(dets)
+        #
+        # results = self.merge_outputs(detections)
+        # return {'results': results}
+        start_time = time.time()
+
+        load_time, pre_time, net_time, dec_time, post_time = 0, 0, 0, 0, 0
+        merge_time, tot_time = 0, 0
+        pre_processed = False
+
+        image = cv2.imread(image_or_path_or_tensor)
 
         detections = []
         for scale in self.scales:
-            images = pre_processed_images['images'][scale][0]
-            meta = pre_processed_images['meta'][scale]
-            meta = {k: v.numpy()[0] for k, v in meta.items()}
-            images = images.to(self.opt.device)
+            scale_start_time = time.time()
+            images, meta = self.pre_process(image, scale, meta)
 
-            output, dets = self.process(images, return_time=True)
+            images = images.to(self.opt.device)
+            torch.cuda.synchronize()
+            pre_process_time = time.time()
+            pre_time += pre_process_time - scale_start_time
+
+            output, dets, forward_time = self.process(images, return_time=True)
+
+            torch.cuda.synchronize()
+            net_time += forward_time - pre_process_time
+            decode_time = time.time()
+            dec_time += decode_time - forward_time
+
+
             dets = self.post_process(dets, meta, scale)
+            torch.cuda.synchronize()
+            post_process_time = time.time()
+            post_time += post_process_time - decode_time
+
             detections.append(dets)
 
         results = self.merge_outputs(detections)
-        return {'results': results}
+        torch.cuda.synchronize()
+        end_time = time.time()
+        merge_time += end_time - post_process_time
+        tot_time += end_time - start_time
+
+        return {'results': results, 'tot': tot_time, 'load': load_time,
+                'pre': pre_time, 'net': net_time, 'dec': dec_time,
+                'post': post_time, 'merge': merge_time}
 
 
 

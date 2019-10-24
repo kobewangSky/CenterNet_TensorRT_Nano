@@ -76,7 +76,7 @@ def main(opt):
 
         log_dict_train, _ = trainer.train(epoch, train_loader, wandb)
         if wandb != None:
-            wandb.log({"{} loss".format('train'): log_dict_val[opt.metric]})
+            wandb.log({"{} loss".format('train'): log_dict_train[opt.metric]})
         #print('epoch: {}, loss: {} |'.format(epoch, avg_loss))
         if opt.val_intervals > 0 and epoch % opt.val_intervals == 0:
             save_model(os.path.join(opt.save_dir, 'model_{}.pth'.format(mark)),

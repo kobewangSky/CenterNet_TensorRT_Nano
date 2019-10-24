@@ -4,7 +4,7 @@ import torch
 from detectors.base_detector import BaseDetector
 from Pytorch_model.utils import ctdet_decode
 from Pytorch_model.utils import ctdet_post_process
-
+import time
 class CtdetDetector(BaseDetector):
     def __init__(self, opt):
         super(CtdetDetector, self).__init__(opt)
@@ -15,8 +15,14 @@ class CtdetDetector(BaseDetector):
             hm = output['hm'].sigmoid_()
             wh = output['wh']
             reg = output['reg'] if self.opt.reg_offset else None
+            torch.cuda.synchronize()
+            forward_time = time.time()
             dets = ctdet_decode(hm, wh, reg=reg, K=self.opt.K)
-        return output, dets
+
+        if return_time:
+            return output, dets, forward_time
+        else:
+            return output, dets
 
     def post_process(self, dets, meta, scale=1):
         dets = dets.detach().cpu().numpy()
