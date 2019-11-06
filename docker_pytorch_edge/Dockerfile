@@ -40,4 +40,5 @@ RUN /bin/bash -c "source /opt/conda/etc/profile.d/conda.sh"\
 CMD ["/usr/sbin/sshd", "-D"]
 
 #docker run --shm-size 24G --gpus all -p 6667:22 -v centernet_edge:/workspace/CenterNet_Easy_Pytorch --name centernet_edge bluce54088/centernet_edge
+#TensorRT
 #
