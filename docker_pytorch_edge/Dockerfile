@@ -29,7 +29,7 @@ EXPOSE 22
 #CMD ["/usr/sbin/sshd", "-D"]
 
 RUN mkdir CenterNet_Easy_Pytorch
-RUN git clone https://github.com/cocodataset/cocoapi.git
+RUN git clone https:/github.com/cocodataset/cocoapi.git
 WORKDIR ./cocoapi/PythonAPI
 RUN make
 RUN python setup.py install --user
