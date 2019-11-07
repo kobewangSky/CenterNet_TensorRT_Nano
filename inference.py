@@ -29,22 +29,31 @@ if __name__=='__main__':
 
     detector = CtdetDetector(opt)
     imgID = 0
-    for image in filelist:
-        img = cv2.imread(image)
-        start = time.time()
-        ret = detector.run(image)
-        end = time.time()
-        print(end - start)
-        for classid in range(1, 80):
-            result = ret['results'][classid]
-            for detect in result:
-                if detect[4] > 0.7:
-                    img = cv2.rectangle(img, (detect[0], detect[1]), (detect[2], detect[3]), (0,255,0),3)
-                    cv2.putText(img, class_name[classid], (detect[0], detect[1]), cv2.FONT_HERSHEY_SIMPLEX,
-                                0.5, (255, 0, 0), 1, cv2.LINE_AA)
+    if opt.demo == 'webcam':
+        cam = cv2.VideoCapture(0)
+        detector.pause = False
+        while True:
+            _, img = cam.read()
+            cv2.imwrite('{}.jpg'.format(imgID), img)
+            #ret = detector.run(img)
 
-        cv2.imwrite('{}.jpg'.format(imgID), img)
-        imgID = imgID + 1
+    else:
+        for image in filelist:
+            img = cv2.imread(image)
+            start = time.time()
+            ret = detector.run(image)
+            end = time.time()
+            print(end - start)
+            for classid in range(1, 80):
+                result = ret['results'][classid]
+                for detect in result:
+                    if detect[4] > 0.7:
+                        img = cv2.rectangle(img, (detect[0], detect[1]), (detect[2], detect[3]), (0,255,0),3)
+                        cv2.putText(img, class_name[classid], (detect[0], detect[1]), cv2.FONT_HERSHEY_SIMPLEX,
+                                    0.5, (255, 0, 0), 1, cv2.LINE_AA)
+
+            cv2.imwrite('{}.jpg'.format(imgID), img)
+            imgID = imgID + 1
 
 
 

@@ -4,7 +4,7 @@ import os
 from detectors.ctdet import CtdetDetector
 from utils.opts import opts
 import cv2
-import torch2trt
+#import torch2trt
 
 class_name = [
             '__background__', 'person', 'bicycle', 'car', 'motorcycle', 'airplane',
