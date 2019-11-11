@@ -33,4 +33,4 @@ RUN apt-get install -y openssh-server\
 
 
 #docker run -it --runtime nvidia devicequery
-#docker run --runtime nvidia --network host -it -e DISPLAY=$DISPLAY bluce54088/nano_cuda
+#docker run --runtime nvidia --network host -it --device /dev/video0 -e DISPLAY=$DISPLAY bluce54088/nano_cuda
