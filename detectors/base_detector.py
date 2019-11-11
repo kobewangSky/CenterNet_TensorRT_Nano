@@ -87,7 +87,13 @@ class BaseDetector(object):
         merge_time, tot_time = 0, 0
         pre_processed = False
 
-        image = cv2.imread(image_or_path_or_tensor)
+        if isinstance(image_or_path_or_tensor, np.ndarray):
+            image = image_or_path_or_tensor
+        elif type(image_or_path_or_tensor) == type(''):
+            image = cv2.imread(image_or_path_or_tensor)
+        else:
+            image = image_or_path_or_tensor['image'][0].numpy()
+            pre_processed_images = image_or_path_or_tensor
 
         detections = []
         for scale in self.scales:
