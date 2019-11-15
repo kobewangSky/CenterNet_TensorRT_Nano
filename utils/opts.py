@@ -73,6 +73,9 @@ class opts(object):
                                  help='multi scale test augmentation.')
         self.parser.add_argument('--K', type=int, default=100,
                                  help='max number of output objects.')
+        self.parser.add_argument('--fix_res', action='store_true',
+                                 help='fix testing resolution or keep '
+                                      'the original resolution')
 
         # task
         # ctdet
@@ -139,6 +142,10 @@ class opts(object):
                                  help='loss weight for keypoint local offsets.')
         self.parser.add_argument('--wh_weight', type=float, default=0.1,
                                  help='loss weight for bounding box size.')
+
+        self.parser.add_argument('--tensorrt', action='store_true',
+                                 help='use mse loss or focal loss to train '
+                                      'keypoint heatmaps.')
 
 
     def update_dataset_info_and_set_heads(self, opt, dataset):

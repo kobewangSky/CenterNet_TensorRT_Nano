@@ -7,15 +7,29 @@ from Pytorch_model.model import load_model
 from utils.image import get_affine_transform
 import time
 
+from torchvision.models.resnet import resnet18
+from torch2trt import torch2trt
 
 class BaseDetector(object):
     def __init__(self, opt):
         opt.device = torch.device('cuda')
         print('Creating model...')
-        self.model = create_model(opt.backbone, opt.heads, opt.head_conv)
-        self.model = load_model(self.model, opt.load_model)
-        self.model = self.model.to(opt.device)
-        self.model.eval()
+        self.model_trt = create_model(opt.backbone, opt.heads, opt.head_conv, True)
+        #because tensorrt not support mutioutpu and ConvTranspose2d, so neeed splite
+        self.model_no_trt = create_model(opt.backbone, opt.heads, opt.head_conv, False)
+
+        self.model_trt = load_model(self.model_trt, opt.load_model)
+        self.model_no_trt = load_model(self.model_no_trt, opt.load_model)
+
+        self.model_trt = self.model_trt.to(opt.device)
+        self.model_trt.eval()
+
+        self.model_no_trt = self.model_no_trt.to(opt.device)
+        self.model_no_trt.eval()
+
+        if opt.tensorrt:
+            x = torch.ones((1, 3, 512, 512)).cuda()
+            self.model_trt = torch2trt(self.model_trt, [x])
 
         self.mean = np.array(opt.mean, dtype=np.float32).reshape(1, 1, 3)
         self.std = np.array(opt.std, dtype=np.float32).reshape(1, 1, 3)
@@ -31,10 +45,15 @@ class BaseDetector(object):
         new_height = int(height * scale)
         new_width = int(width * scale)
 
-        inp_height = (new_height | self.opt.pad) + 1
-        inp_width = (new_width | self.opt.pad) + 1
-        c = np.array([new_width // 2, new_height // 2], dtype=np.float32)
-        s = np.array([inp_width, inp_height], dtype=np.float32)
+        if self.opt.fix_res:
+            inp_height, inp_width = self.opt.input_h, self.opt.input_w
+            c = np.array([new_width / 2., new_height / 2.], dtype=np.float32)
+            s = max(height, width) * 1.0
+        else:
+            inp_height = (new_height | self.opt.pad) + 1
+            inp_width = (new_width | self.opt.pad) + 1
+            c = np.array([new_width // 2, new_height // 2], dtype=np.float32)
+            s = np.array([inp_width, inp_height], dtype=np.float32)
 
         trans_input = get_affine_transform(c, s, 0, [inp_width, inp_height])
         resized_image = cv2.resize(image, (new_width, new_height))
@@ -99,7 +118,6 @@ class BaseDetector(object):
         for scale in self.scales:
             scale_start_time = time.time()
             images, meta = self.pre_process(image, scale, meta)
-
             images = images.to(self.opt.device)
             torch.cuda.synchronize()
             pre_process_time = time.time()

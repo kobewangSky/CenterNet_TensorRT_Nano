@@ -5,7 +5,7 @@ from detectors.ctdet import CtdetDetector
 from utils.opts import opts
 import cv2
 import time
-
+import numpy as np
 
 class_name = [
             '__background__', 'person', 'bicycle', 'car', 'motorcycle', 'airplane',
@@ -102,24 +102,28 @@ if __name__=='__main__':
         filelist = glob.glob(filedir)
 
         inferencetime = 0
-        for i in range(100):
-            img = cv2.imread(filelist[0])
-            start = time.time()
-            ret = detector.run(img)
-            end = time.time()
-            print(end - start)
-            inferencetime = inferencetime + end - start
-            for classid in range(1, 80):
-                result = ret['results'][classid]
-                for detect in result:
-                    if detect[4] > 0.2:
-                        img = cv2.rectangle(img, (detect[0], detect[1]), (detect[2], detect[3]), (0,255,0),3)
-                        cv2.putText(img, class_name[classid], (detect[0], detect[1]), cv2.FONT_HERSHEY_SIMPLEX,
-                                    0.5, (255, 0, 0), 1, cv2.LINE_AA)
+        TimeList = []
 
-            cv2.imwrite('{}.jpg'.format(imgID), img)
-            imgID = imgID + 1
-        print('mean = {}'.format(inferencetime / 100))
+        while (len(TimeList) < 100):
+            for file in filelist:
+                img = cv2.imread(file)
+                start = time.time()
+                ret = detector.run(img)
+                end = time.time()
+                print(end - start)
+                TimeList.append(end - start)
+                for classid in range(1, 80):
+                    result = ret['results'][classid]
+                    for detect in result:
+                        if detect[4] > 0.7:
+                            img = cv2.rectangle(img, (detect[0], detect[1]), (detect[2], detect[3]), (0,255,0),3)
+                            cv2.putText(img, class_name[classid], (detect[0], detect[1]), cv2.FONT_HERSHEY_SIMPLEX,
+                                        0.5, (255, 0, 0), 1, cv2.LINE_AA)
+
+                cv2.imwrite('{}.jpg'.format(imgID), img)
+                imgID = imgID + 1
+        temp = np.array(TimeList[1:])
+        print('mean = {}'.format(temp.mean()))
 
 
 
