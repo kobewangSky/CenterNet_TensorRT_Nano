@@ -19,7 +19,6 @@ from .Conv1d import *
 from .Conv2d import *
 from .ConvTranspose2d import *
 from .identity import *
-from .Identity import *
 from .Linear import *
 from .LogSoftmax import *
 from .max_pool2d import *
@@ -32,9 +31,7 @@ from .pow import *
 from .prelu import *
 from .prod import *
 from .relu import *
-from .ReLU import *
 from .relu6 import *
-from .ReLU6 import *
 from .sigmoid import *
 from .sub import *
 from .sum import *

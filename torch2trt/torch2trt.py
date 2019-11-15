@@ -273,18 +273,16 @@ class ConversionContext(object):
                 torch_input._trt = trt_tensor
 
     def mark_outputs(self, torch_outputs, names=None):
+        if names is None:
+            names = ['output_%d' % i for i in range(len(torch_outputs))]
+        self.output_names = names
 
-
-
-
-        if isinstance(torch_outputs, list):
-            if names is None:
-                names = ['output_%d' % i for i in range(len(torch_outputs[0]))]
-            self.output_names = names
-
-            torch_outputs = torch_outputs[0]
-
-            for i, torch_output in enumerate(torch_outputs):
+        for i, torch_output in enumerate(torch_outputs):
+            trt_tensor = torch_output._trt
+            trt_tensor.name = names[i]
+            trt_tensor.location = torch_device_to_trt(torch_output.device)
+            trt_tensor.dtype = torch_dtype_to_trt(torch_output.dtype)
+            self.network.mark_output(trt_tensor)
 class TRTModule(torch.nn.Module):
     def __init__(self, engine=None, input_names=None, output_names=None):
         super(TRTModule, self).__init__()
