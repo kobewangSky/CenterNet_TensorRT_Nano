@@ -25,8 +25,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get install -y python3-pip\
 && apt-get install -y git\
-&& apt-get install -y python3-opencv\
-&& apt-get install -y python3-pycuda
+&& apt-get install -y python3-opencv
 
 RUN pip3 install torch torchvision
 RUN pip3 install onnx
