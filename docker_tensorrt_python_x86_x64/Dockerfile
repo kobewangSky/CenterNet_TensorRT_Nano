@@ -27,8 +27,16 @@ RUN apt-get install -y python3-pip\
 && apt-get install -y git\
 && apt-get install -y python3-opencv
 
-RUN pip3 install torch torchvision
-RUN pip3 install onnx
+RUN pip3 install torch torchvision\
+&& pip3 install onnx
+
+RUN apt-get install -y libprotobuf* protobuf-compiler ninja-build
+
+WORKDIR /root/
+RUN git clone https://github.com/kobewangSky/CenterNet_edge.git
+WORKDIR /root/CenterNet_edge/
+RUN python3 setup.py install --plugins
+
 
 
 

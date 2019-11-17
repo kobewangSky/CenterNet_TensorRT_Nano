@@ -32,8 +32,15 @@ RUN apt-get install -y openssh-server\
 && sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd\
 && echo "export VISIBLE=now" >> /etc/profile
 
-
+RUN apt-get update\
+&& apt-get install libjpeg-dev zlib1g-dev\
+&& pip3 install pillow\
+&& pip3 install torchvision
 
 
 #docker run -it --runtime nvidia devicequery
 #docker run --runtime nvidia --network host -it --device /dev/video0 -e DISPLAY=$DISPLAY bluce54088/nano_cuda
+
+#Tensorrt
+#docker run -it --rm --net=host --runtime nvidia  -v /usr/lib/python3.6/dist-packages/tensorrt:/usr/lib/python3.6/dist-packages/tensorrt penolove/jetson_nano_tensorrt_yolov3
+

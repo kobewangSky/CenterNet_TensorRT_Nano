@@ -32,8 +32,20 @@ RUN apt-get install -y openssh-server\
 && sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd\
 && echo "export VISIBLE=now" >> /etc/profile
 
+RUN apt-get update\
+&& apt-get install libjpeg-dev zlib1g-dev\
+&& pip3 install pillow\
+&& pip3 install torchvision\
+&& apt-get install -y libprotobuf* protobuf-compiler ninja-build
 
-
+WORKDIR /root/CenterNet_edge/
+RUN python3 setup.py install --plugins
 
 #docker run -it --runtime nvidia devicequery
-#docker run --runtime nvidia --network host -it --device /dev/video0 -e DISPLAY=$DISPLAY bluce54088/nano_cuda
+#docker run --runtime nvidia --network host -it --device /dev/video0 -e DISPLAY=$DISPLAY bluce54088/nano_cuda:v0
+
+#Tensorrt
+#docker run -it --net=host --runtime nvidia  -v /usr/lib/python3.6/dist-packages/tensorrt:/usr/lib/python3.6/dist-packages/tensorrt bluce54088/nano_cuda_pytorch
+
+
+
