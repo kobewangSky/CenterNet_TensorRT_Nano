@@ -49,6 +49,7 @@ print('mean = {}'.format(temp.mean()))
 
 from torch2trt import TRTModule
 
+
 model_trt_load = TRTModule()
 
 model_trt_load.load_state_dict(torch.load('Resnet_50.pth'))

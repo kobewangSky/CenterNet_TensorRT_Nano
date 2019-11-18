@@ -28,15 +28,15 @@ RUN apt-get install -y python3-pip\
 && apt-get install -y python3-opencv\
 && pip3 install torch torchvision\
 && pip3 install onnx\
-&& apt-get install -y libprotobuf* protobuf-compiler ninja-build
-#&& apt-get install -y python\
-
-RUN apt-get install -y python3-setuptools
+&& apt-get install -y libprotobuf* protobuf-compiler ninja-build\
+&& apt-get install -y python3-setuptools
 
 WORKDIR /root/
 RUN git clone https://github.com/kobewangSky/CenterNet_edge.git
-WORKDIR /root/CenterNet_edge/
-RUN python3 setup.py install --plugins
+WORKDIR /root/
+RUN git clone https://github.com/kobewangSky/torch2trt-1.git
+WORKDIR /root/torch2trt-1
+RUN python3 setup.py install
 
 RUN pip3 install Cython\
 && pip3 install pycocotools\
@@ -46,10 +46,7 @@ RUN pip3 install Cython\
 WORKDIR /root/
 RUN git clone https://github.com/cocodataset/cocoapi.git
 WORKDIR ./cocoapi/PythonAPI
-RUN make
 RUN python setup.py install --user
-RUN /bin/bash -c "source /opt/conda/etc/profile.d/conda.sh"\
-&& echo "export PATH=/opt/conda/bin:$PATH" >> ~/.bashrc
 
 
 
