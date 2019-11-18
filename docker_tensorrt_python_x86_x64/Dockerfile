@@ -6,7 +6,7 @@ RUN apt-get update\
 && apt-get install -y vim
 
 RUN mkdir /var/run/sshd\
-&& echo 'root:2012620126' | chpasswd\
+&& echo 'root:password' | chpasswd\
 && sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config\
 && sed -i 's/\/usr\/lib\/openssh\/sftp-server/internal-sftp/' /etc/ssh/sshd_config\
 && sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd\
@@ -25,18 +25,31 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get install -y python3-pip\
 && apt-get install -y git\
-&& apt-get install -y python3-opencv
+&& apt-get install -y python3-opencv\
+&& pip3 install torch torchvision\
+&& pip3 install onnx\
+&& apt-get install -y libprotobuf* protobuf-compiler ninja-build
+#&& apt-get install -y python\
 
-RUN pip3 install torch torchvision\
-&& pip3 install onnx
-
-RUN apt-get install -y libprotobuf* protobuf-compiler ninja-build
+RUN apt-get install -y python3-setuptools
 
 WORKDIR /root/
 RUN git clone https://github.com/kobewangSky/CenterNet_edge.git
 WORKDIR /root/CenterNet_edge/
 RUN python3 setup.py install --plugins
 
+RUN pip3 install Cython\
+&& pip3 install pycocotools\
+&& pip3 install matplotlib
+
+
+WORKDIR /root/
+RUN git clone https://github.com/cocodataset/cocoapi.git
+WORKDIR ./cocoapi/PythonAPI
+RUN make
+RUN python setup.py install --user
+RUN /bin/bash -c "source /opt/conda/etc/profile.d/conda.sh"\
+&& echo "export PATH=/opt/conda/bin:$PATH" >> ~/.bashrc
 
 
 
