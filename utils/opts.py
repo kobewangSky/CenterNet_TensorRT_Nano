@@ -28,7 +28,7 @@ class opts(object):
 
         self.parser.add_argument('--backbone', default='dla_34',
                                  help='model architecture. Currently tested'
-                                      'res_18 | resdcn_18')
+                                      'res_18 | mobilev2 | Ev')
 
         # input
         self.parser.add_argument('--input_res', type=int, default=-1,

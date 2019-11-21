@@ -34,19 +34,28 @@ RUN apt-get install -y python3-pip\
 WORKDIR /root/
 RUN git clone https://github.com/kobewangSky/CenterNet_edge.git
 WORKDIR /root/
+
 RUN git clone https://github.com/kobewangSky/torch2trt-1.git
 WORKDIR /root/torch2trt-1
 RUN python3 setup.py install
 
+#for cocoapi build
 RUN pip3 install Cython\
 && pip3 install pycocotools\
-&& pip3 install matplotlib
+&& pip3 install matplotlib\
+&& pip3 install progress\
+&& pip3 install wandb
 
-
+#for cocoapi
 WORKDIR /root/
 RUN git clone https://github.com/cocodataset/cocoapi.git
 WORKDIR ./cocoapi/PythonAPI
-RUN python setup.py install --user
+RUN python3 setup.py install --user
+
+#for nvcc
+RUN export PATH=$PATH:/usr/local/cuda/bin
+
+#ln /usr/bin/python /usr/bin/python3
 
 
 

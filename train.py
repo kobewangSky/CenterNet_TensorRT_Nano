@@ -2,12 +2,12 @@ import torch
 import torch.utils.data
 from dataset.ctdet import CTDetDataset
 from utils.opts import opts
-from Pytorch_model.model import create_model
-from Pytorch_model.model import load_model
+from Pytorch_model.model_process import create_model
+from Pytorch_model.model_process import load_model
 from trains.ctdet import CtdetTrainer
 import os
 from collections import deque
-from Pytorch_model.model import save_model
+from Pytorch_model.model_process import save_model
 from utils.opts import opts
 import wandb
 
@@ -25,7 +25,7 @@ def main(opt):
 
     print('Creating model...')
 
-    model = create_model(opt.backbone, opt.heads, opt.head_conv)
+    model = create_model(opt.backbone, opt.heads, opt.head_conv, opt.tensorrt)
     wandb.watch(model)
     optimizer = torch.optim.Adam(model.parameters(), lr=opt.lr)
 

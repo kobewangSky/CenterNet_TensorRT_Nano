@@ -5,14 +5,15 @@ from detectors.base_detector import BaseDetector
 from Pytorch_model.utils import ctdet_decode
 from Pytorch_model.utils import ctdet_post_process
 import time
+import subprocess
+import os
 class CtdetDetector(BaseDetector):
     def __init__(self, opt):
         super(CtdetDetector, self).__init__(opt)
 
     def process(self, images, return_time=False):
         with torch.no_grad():
-            output = self.model_trt(images)
-            output = self.model_no_trt(output)[-1]
+            output = self.model(images)[-1]
             hm = output['hm'].sigmoid_()
             wh = output['wh']
             reg = output['reg'] if self.opt.reg_offset else None
@@ -50,3 +51,17 @@ class CtdetDetector(BaseDetector):
                 keep_inds = (results[j][:, 4] >= thresh)
                 results[j] = results[j][keep_inds]
         return results
+
+    def UseTensorrt(self):
+        onnx_path = "temp.onnx"
+        image_shape = torch.ones((1, 3, 512, 512)).cuda()
+        torch.onnx.export(
+            self.model,
+            image_shape,
+            onnx_path,
+            verbose=False,
+            input_names=['image'],
+        )
+        tensorrt_name = onnx_path.replace('onnx', 'trt')
+        cmd = 'onnx2trt {} -o {}'.format(onnx_path, tensorrt_name)
+        subprocess.call(cmd, shell=True)

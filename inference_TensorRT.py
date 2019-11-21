@@ -4,7 +4,9 @@ import os
 from detectors.ctdet import CtdetDetector
 from utils.opts import opts
 import cv2
-#import torch2trt
+import subprocess
+
+
 
 class_name = [
             '__background__', 'person', 'bicycle', 'car', 'motorcycle', 'airplane',
@@ -27,6 +29,8 @@ if __name__=='__main__':
     opt = opts().init()
 
     detector = CtdetDetector(opt)
+    detector.UseTensorrt()
+
     imgID = 0
     for image in filelist:
         img = cv2.imread(image)

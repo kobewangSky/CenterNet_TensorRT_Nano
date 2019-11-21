@@ -1,19 +1,19 @@
 import torch
-from Pytorch_model.resnet import get_pose_net, PoseResNet_no_tenserRT
-from Pytorch_model.resnet_dcn import get_pose_net_dcn
+#from model.resnet import get_pose_net
+from Pytorch_model.resnet import get_resnet_net
 
 
-def create_model(arch : str, heads, head_conv, use_trt):
+def create_model(arch : str, heads, head_conv, torch2tensorrt):
 
     layers = int(arch[(arch.find('_') + 1):])
 
-    if 'dcn' in arch:
-        model = get_pose_net_dcn(num_layers = layers, heads = heads)
-    else:
-        if use_trt == True:
-            model = get_pose_net(num_layers=layers, heads=heads, head_conv=head_conv)
-        else:
-            model = PoseResNet_no_tenserRT(heads, head_conv)
+    # if use_trt == True:
+    #     model = get_pose_net(num_layers=layers, heads=heads, head_conv=head_conv)
+    # else:
+    #     model = PoseResNet_no_tenserRT(heads, head_conv)
+
+    model = get_resnet_net(num_layers=layers, heads=heads, head_conv=head_conv, torch2tenssort = torch2tensorrt)
+
     return model
 
 def load_model(model, model_path, optimizer=None, resume=False, lr = None, lr_step=None):
