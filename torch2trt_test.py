@@ -32,40 +32,6 @@ temp = np.array(timelist)
 print(sum(timelist))
 print('mean = {}'.format(temp.mean()))
 
-# print('y_trt = model_trt(x)')
-# start = time.time()
-# y_trt = model_trt(x)
-# end = time.time()
-# print(end - start)
-#
-# start = time.time()
-# y_trt = model_trt_16(x)
-# end = time.time()
-# print(end - start)
-
-# start = time.time()
-# y_trt = model_trt_8(x)
-# end = time.time()
-# print(end - start)
-
-#torch.save(model_trt.state_dict(), 'Resnet_50.pth')
-
-
-# model = onnx.load("temp.onnx")
-# # Check that the IR is well formed
-# onnx.checker.check_model(model)
-#
-# # Print a human readable representation of the graph
-# print(onnx.helper.printable_graph(model.graph))
-#
-# engine = backend.prepare(model, device='CUDA:1')
-# input_data = np.random.random(size=(32, 3, 224, 224)).astype(np.float32)
-# output_data = engine.run(input_data)[0]
-# print(output_data)
-# print(output_data.shape)
-
-
-
 
 from torch2trt import TRTModule
 model_trt_load = TRTModule()
