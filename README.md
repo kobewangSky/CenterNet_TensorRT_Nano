@@ -7,6 +7,7 @@ Centernet use TensorRT speed up on Nano
 - [x] Nano Dockerfile
 - [x] Resnet50 to Tensorrt
 - [x] Centernet backbone to Tensorrt
+- [x] Centernet inference on nano camera
 - [ ] upsample for Tensorrt 
 - [ ] CI/CD
 
@@ -34,7 +35,7 @@ DockeImage : bluce54088/nano_cuda_pytorch:v0
 
 1. Run docker 
 ```
-    docker run -it --net=host --runtime nvidia  -v /usr/lib/python3.6/dist-packages/tensorrt:/usr/lib/python3.6/dist-packages/tensorrt bluce54088/nano_cuda_pytorch:v1
+    docker run -it --net=host --runtime nvidia --device /dev/video0 -e DISPLAY=$DISPLAY -v /usr/lib/python3.6/dist-packages/tensorrt:/usr/lib/python3.6/dist-packages/tensorrt bluce54088/nano_cuda_pytorch:v1
 ```
 2. check environment
 ```
@@ -60,7 +61,7 @@ Resnet50    | Nano |  0.438ms |    0.200ms
   
 
 
-# inference detection for coco sampledata
+# Inference Centernet For CoCo Sampledata
 ```
     python3 inference.py ctdet --exp_id coco_res18 --backbone res_18 --batch_size 1 --load_model ./exp/ctdet/coco_res18/model_best.pth --fix_res --tensorrt
 ```
@@ -69,5 +70,14 @@ Result sample
 <img src="https://github.com/kobewangSky/CenterNet_TensorRT_Nano/blob/master/result/0.jpg" width="200" height="200" alt="图片描述文字"/> <img src="https://github.com/kobewangSky/CenterNet_TensorRT_Nano/blob/master/result/1.jpg" width="200" height="200" alt="图片描述文字"/> <img src="https://github.com/kobewangSky/CenterNet_TensorRT_Nano/blob/master/result/2.jpg" width="200" height="200" alt="图片描述文字"/> <img src="https://github.com/kobewangSky/CenterNet_TensorRT_Nano/blob/master/result/3.jpg" width="200" height="200" alt="图片描述文字"/>
 
 
+# Inference Centernet For Webcam
 
+```
+ctdet --exp_id coco_res18 --backbone res_18 --batch_size 1 --load_model ./exp/ctdet/coco_res18/model_best.pth --fix_res --tensorrt --demo Webcam
+```
 
+# Reference
+
+[CenterNet](https://github.com/xingyizhou/CenterNet)
+[Tensorrt](https://developer.nvidia.com/tensorrt)
+[Torch2trt](https://github.com/NVIDIA-AI-IOT/torch2trt)
