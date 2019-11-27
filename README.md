@@ -46,3 +46,8 @@ DockeImage : bluce54088/nano_cuda_pytorch:v0
     python3 torch2trt_test.py
 ```
 
+# inference detection for coco sampledata
+```
+    python3 inference.py ctdet --exp_id coco_res18 --backbone res_18 --batch_size 1 --load_model ./exp/ctdet/coco_res18/model_best.pth --fix_res --tensorrt
+```
+
