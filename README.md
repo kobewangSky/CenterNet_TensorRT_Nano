@@ -79,5 +79,7 @@ ctdet --exp_id coco_res18 --backbone res_18 --batch_size 1 --load_model ./exp/ct
 # Reference
 
 [CenterNet](https://github.com/xingyizhou/CenterNet)
+
 [Tensorrt](https://developer.nvidia.com/tensorrt)
+
 [Torch2trt](https://github.com/NVIDIA-AI-IOT/torch2trt)
