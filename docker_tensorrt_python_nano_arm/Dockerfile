@@ -9,10 +9,10 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y --no-install-recommends make g++
 # cp -r /usr/local/cuda/samples/ ./ 使用cuda的sample
-COPY ./samples /tmp/samples
-#libnvToolsExt.so.1
-WORKDIR /tmp/samples/1_Utilities/deviceQuery
-RUN make clean && make
+#COPY ./samples /tmp/samples
+##libnvToolsExt.so.1
+#WORKDIR /tmp/samples/1_Utilities/deviceQuery
+#RUN make clean && make
 
 #https://devtalk.nvidia.com/default/topic/1049071/jetson-nano/pytorch-for-jetson-nano/
 
@@ -32,20 +32,20 @@ RUN apt-get install -y openssh-server\
 && sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd\
 && echo "export VISIBLE=now" >> /etc/profile
 
-RUN apt-get update\
-&& apt-get install libjpeg-dev zlib1g-dev\
+RUN apt-get -y update\
+&& apt-get -y install libjpeg-dev zlib1g-dev\
 && pip3 install pillow\
 && pip3 install torchvision\
 && apt-get install -y libprotobuf* protobuf-compiler ninja-build
 
 WORKDIR /root/CenterNet_edge/
+RUN rm -r torch2trt
+RUN git clone https://github.com/NVIDIA-AI-IOT/torch2trt
+WORKDIR /root/CenterNet_edge/torch2trt
 RUN python3 setup.py install --plugins
 
-#docker run -it --runtime nvidia devicequery
-#docker run --runtime nvidia --network host -it --device /dev/video0 -e DISPLAY=$DISPLAY bluce54088/nano_cuda:v0
-
 #Tensorrt
-#docker run -it --net=host --runtime nvidia  -v /usr/lib/python3.6/dist-packages/tensorrt:/usr/lib/python3.6/dist-packages/tensorrt bluce54088/nano_cuda_pytorch
+#docker run -it --net=host --runtime nvidia --device /dev/video0 -e DISPLAY=$DISPLAY -v /usr/lib/python3.6/dist-packages/tensorrt:/usr/lib/python3.6/dist-packages/tensorrt bluce54088/nano_cuda_pytorch:v1
 
 
 

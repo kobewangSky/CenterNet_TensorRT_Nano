@@ -82,10 +82,11 @@ if __name__=='__main__':
                 for classid in range(1, 80):
                     result = ret['results'][classid]
                     for detect in result:
-                        if detect[4] > 0.2:
+                        if detect[4] > 0.3:
                             img = cv2.rectangle(img, (detect[0], detect[1]), (detect[2], detect[3]), (0, 255, 0), 3)
                             cv2.putText(img, class_name[classid], (detect[0], detect[1]), cv2.FONT_HERSHEY_SIMPLEX,
                                         0.5, (255, 0, 0), 1, cv2.LINE_AA)
+                #cv2.imshow('test', img)
                 cv2.imwrite('{}.jpg'.format(imgID), img)
                 imgID = imgID + 1
 
@@ -125,6 +126,3 @@ if __name__=='__main__':
         temp = np.array(TimeList[1:])
         print('mean = {}'.format(temp.mean()))
 
-
-
-#ctdet --exp_id coco_res18 --backbone res_18 --batch_size 1 --load_model ./exp/ctdet/coco_res18/model_best.pth --demo Rpicam
