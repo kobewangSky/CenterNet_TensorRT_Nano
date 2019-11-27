@@ -35,11 +35,14 @@ DockeImage : bluce54088/nano_cuda_pytorch:v0
     import tensorrt
 ```
 
-# Quick start
+# Quick start test tensorrt 
 1.Pull CenterNet_TensorRT_Nano
 ```
     cd /root/CenterNet_edge/
-    
+    git pull
 ```
-
+2. Run Tesorrt Resnet50 test 
+```
+    python3 torch2trt_test.py
+```
 
