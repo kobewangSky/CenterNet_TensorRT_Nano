@@ -3,6 +3,13 @@ Centernet use TensorRT speed up on Nano
 
 # TODO
 
+- [x] x86 x64 Dockerfile
+- [x] Nano Dockerfile
+- [x] Resnet50 to Tensorrt
+- [x] Centernet backbone to Tensorrt
+- [ ] upsample for Tensorrt 
+- [ ] CI/CD
+
 # Environment
 I am use the Docker to build Amd(x64/x86) and Arm(Nano) environment
 so use docker or follow my dockerfile to build the environment
@@ -27,7 +34,7 @@ DockeImage : bluce54088/nano_cuda_pytorch:v0
 
 1. Run docker 
 ```
-    docker run -it --net=host --runtime nvidia  -v /usr/lib/python3.6/dist-packages/tensorrt:/usr/lib/python3.6/dist-packages/tensorrt bluce54088/nano_cuda_pytorch
+    docker run -it --net=host --runtime nvidia  -v /usr/lib/python3.6/dist-packages/tensorrt:/usr/lib/python3.6/dist-packages/tensorrt bluce54088/nano_cuda_pytorch:v1
 ```
 2. check environment
 ```
@@ -45,6 +52,13 @@ DockeImage : bluce54088/nano_cuda_pytorch:v0
 ```
     python3 torch2trt_test.py
 ```
+
+Model           | Device  | without TensorRT | with TensorRT
+--------------|:-----:|-----:| --------------------------
+Resnet50    | 1080ti |  0.123ms |    0.051ms 
+Resnet50    | Nano |  0.438ms |    0.200ms 
+  
+
 
 # inference detection for coco sampledata
 ```
