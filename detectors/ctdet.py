@@ -13,7 +13,9 @@ class CtdetDetector(BaseDetector):
 
     def process(self, images, return_time=False):
         with torch.no_grad():
-            output = self.model(images)[-1]
+            output = self.model_trt(images)
+            output = self.model(output)[-1]
+
             hm = output['hm'].sigmoid_()
             wh = output['wh']
             reg = output['reg'] if self.opt.reg_offset else None

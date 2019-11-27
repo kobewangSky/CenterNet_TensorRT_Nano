@@ -1,8 +1,9 @@
 import torch
-from torch2trt import torch2trt
+from torch2trt.torch2trt import torch2trt
 from torchvision.models.resnet import resnet50
 import time
 import numpy as np
+from Pytorch_model.resnet import PoseResNet
 # create some regular pytorch model...
 model = resnet50(pretrained=True).eval().cuda()
 import tensorrt as trt
@@ -47,38 +48,38 @@ print('mean = {}'.format(temp.mean()))
 # end = time.time()
 # print(end - start)
 
-#torch.save(model_trt.state_dict(), 'alexnet_trt.pth')
+#torch.save(model_trt.state_dict(), 'Resnet_50.pth')
 
 
-model = onnx.load("temp.onnx")
-# Check that the IR is well formed
-onnx.checker.check_model(model)
-
-# Print a human readable representation of the graph
-print(onnx.helper.printable_graph(model.graph))
-
-engine = backend.prepare(model, device='CUDA:1')
-input_data = np.random.random(size=(32, 3, 224, 224)).astype(np.float32)
-output_data = engine.run(input_data)[0]
-print(output_data)
-print(output_data.shape)
-
-
-
-
-# from torch2trt import TRTModule
-# model_trt_load = TRTModule()
+# model = onnx.load("temp.onnx")
+# # Check that the IR is well formed
+# onnx.checker.check_model(model)
 #
-# model_trt_load.load_state_dict(torch.load('Resnet_50.pth'))
-# timelist.clear()
-# timelist = []
-# for i in range(101):
-#     start = time.time()
-#     y_trt = model_trt_load(x)
-#     end = time.time()
-#     print(end - start)
-#     timelist.append(end - start)
-# temp = np.array(timelist)
-# print(sum(timelist))
-# print('mean = {}'.format(temp.mean()))
-# print(1)
+# # Print a human readable representation of the graph
+# print(onnx.helper.printable_graph(model.graph))
+#
+# engine = backend.prepare(model, device='CUDA:1')
+# input_data = np.random.random(size=(32, 3, 224, 224)).astype(np.float32)
+# output_data = engine.run(input_data)[0]
+# print(output_data)
+# print(output_data.shape)
+
+
+
+
+from torch2trt import TRTModule
+model_trt_load = TRTModule()
+
+model_trt_load.load_state_dict(torch.load('Resnet_50.pth'))
+timelist.clear()
+timelist = []
+for i in range(101):
+    start = time.time()
+    y_trt = model_trt_load(x)
+    end = time.time()
+    print(end - start)
+    timelist.append(end - start)
+temp = np.array(timelist)
+print(sum(timelist))
+print('mean = {}'.format(temp.mean()))
+print(1)

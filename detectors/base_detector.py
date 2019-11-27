@@ -14,37 +14,27 @@ class BaseDetector(object):
     def __init__(self, opt):
         opt.device = torch.device('cuda')
         print('Creating model...')
-        self.model = create_model(opt.backbone, opt.heads, opt.head_conv, True)
+        self.model_trt = create_model(opt.backbone, opt.heads, opt.head_conv, True)
+        self.model = create_model(opt.backbone, opt.heads, opt.head_conv, False)
         #because tensorrt not support mutioutpu and ConvTranspose2d, so neeed splite
 
-
+        self.model_trt = load_model(self.model_trt, opt.load_model)
         self.model = load_model(self.model, opt.load_model)
 
+        self.model_trt = self.model_trt.to(opt.device)
+        self.model_trt.eval()
 
         self.model = self.model.to(opt.device)
         self.model.eval()
 
         if opt.tensorrt:
             x = torch.ones((1, 3, 512, 512)).cuda()
-        #     torch.onnx.export(self.model,  # model being run
-        #                       x,  # model input (or a tuple for multiple inputs)
-        #                       "Center_Resnet_18.onnx",  # where to save the model (can be a file or file-like object)
-        #                       export_params=True,  # store the trained parameter weights inside the model file
-        #                       opset_version=10,  # the ONNX version to export the model to
-        #                       do_constant_folding=True,  # whether to execute constant folding for optimization
-        #                       input_names=['input'],  # the model's input names
-        #                       output_names=['output'],  # the model's output names
-        #                       dynamic_axes={'input': {0: 'batch_size'},  # variable lenght axes
-        #                                     'output': {0: 'batch_size'}})
-        #
-            self.model = torch2trt(self.model, [x])
-            torch.save(self.model.state_dict(), 'Centernet_resnet18.pth')
+
+            self.model_trt = torch2trt(self.model_trt, [x])
+            torch.save(self.model_trt.state_dict(), 'temp.pth')
             from torch2trt import TRTModule
-            self.model = TRTModule()
-            self.model.load_state_dict(torch.load('Centernet_resnet18.pth'))
-        #     # from torch2trt_test import TRTModule
-        #     # self.model = TRTModule()
-        #     # self.model.load_state_dict(torch.load('Centernet_resnet18.pth'))
+            self.model_trt = TRTModule()
+            self.model_trt.load_state_dict(torch.load('temp.pth'))
 
         self.mean = np.array(opt.mean, dtype=np.float32).reshape(1, 1, 3)
         self.std = np.array(opt.std, dtype=np.float32).reshape(1, 1, 3)

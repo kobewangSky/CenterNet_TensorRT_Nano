@@ -7,11 +7,6 @@ def create_model(arch : str, heads, head_conv, torch2tensorrt):
 
     layers = int(arch[(arch.find('_') + 1):])
 
-    # if use_trt == True:
-    #     model = get_pose_net(num_layers=layers, heads=heads, head_conv=head_conv)
-    # else:
-    #     model = PoseResNet_no_tenserRT(heads, head_conv)
-
     model = get_resnet_net(num_layers=layers, heads=heads, head_conv=head_conv, torch2tenssort = torch2tensorrt)
 
     return model

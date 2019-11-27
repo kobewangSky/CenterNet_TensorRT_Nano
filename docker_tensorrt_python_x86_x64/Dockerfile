@@ -33,18 +33,19 @@ RUN apt-get install -y python3-pip\
 
 WORKDIR /root/
 RUN git clone https://github.com/kobewangSky/CenterNet_edge.git
-WORKDIR /root/
-
-RUN git clone https://github.com/kobewangSky/torch2trt-1.git
-WORKDIR /root/torch2trt-1
-RUN python3 setup.py install
+WORKDIR /root/CenterNet_edge
+RUN rm -r torch2trt
+RUN git clone https://github.com/NVIDIA-AI-IOT/torch2trt
+WORKDIR /root/CenterNet_edge/torch2trt
+RUN python3 setup.py install --plugins
 
 #for cocoapi build
 RUN pip3 install Cython\
 && pip3 install pycocotools\
 && pip3 install matplotlib\
 && pip3 install progress\
-&& pip3 install wandb
+&& pip3 install wandb\
+&& pip3 install pycuda
 
 #for cocoapi
 WORKDIR /root/
@@ -59,6 +60,6 @@ RUN export PATH=$PATH:/usr/local/cuda/bin
 
 
 
-#docker run --shm-size 24G --gpus all -it -p 6667:22  --name tensorrt_pytorch_amd  bluce54088/tensorrt_pytorch_amd
+#docker run --shm-size 24G --gpus all -it -p 6667:22  --name tensorrt_pytorch  bluce54088/tensorrt_pytorch_x86_x64:v0
 #TensorRT
 #
