@@ -8,7 +8,7 @@ from utils.image import get_affine_transform
 import time
 
 from torchvision.models.resnet import resnet18
-from torch2trt import torch2trt
+from torch2trt.torch2trt import torch2trt
 
 class BaseDetector(object):
     def __init__(self, opt):
