@@ -50,4 +50,10 @@ DockeImage : bluce54088/nano_cuda_pytorch:v0
 ```
     python3 inference.py ctdet --exp_id coco_res18 --backbone res_18 --batch_size 1 --load_model ./exp/ctdet/coco_res18/model_best.pth --fix_res --tensorrt
 ```
+Result sample
+
+<img src="https://github.com/kobewangSky/CenterNet_TensorRT_Nano/blob/master/result/0.jpg" width="200" height="200" alt="图片描述文字"/> <img src="https://github.com/kobewangSky/CenterNet_TensorRT_Nano/blob/master/result/1.jpg" width="200" height="200" alt="图片描述文字"/> <img src="https://github.com/kobewangSky/CenterNet_TensorRT_Nano/blob/master/result/2.jpg" width="200" height="200" alt="图片描述文字"/> <img src="https://github.com/kobewangSky/CenterNet_TensorRT_Nano/blob/master/result/3.jpg" width="200" height="200" alt="图片描述文字"/>
+
+
+
 
