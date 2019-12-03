@@ -26,7 +26,7 @@ class BaseDetector(object):
 
         self.model = self.model.to(opt.device)
         self.model.eval()
-
+        #Transform model from torch to tensorrt 
         if opt.tensorrt:
             x = torch.ones((1, 3, 512, 512)).cuda()
 
@@ -90,21 +90,6 @@ class BaseDetector(object):
         raise NotImplementedError
 
     def run(self, image_or_path_or_tensor, meta=None):
-        # pre_processed_images = image_or_path_or_tensor
-        #
-        # detections = []
-        # for scale in self.scales:
-        #     images = pre_processed_images['images'][scale][0]
-        #     meta = pre_processed_images['meta'][scale]
-        #     meta = {k: v.numpy()[0] for k, v in meta.items()}
-        #     images = images.to(self.opt.device)
-        #
-        #     output, dets = self.process(images, return_time=True)
-        #     dets = self.post_process(dets, meta, scale)
-        #     detections.append(dets)
-        #
-        # results = self.merge_outputs(detections)
-        # return {'results': results}
         start_time = time.time()
 
         load_time, pre_time, net_time, dec_time, post_time = 0, 0, 0, 0, 0

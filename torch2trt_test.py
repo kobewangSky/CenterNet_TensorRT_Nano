@@ -8,6 +8,7 @@ model = resnet50(pretrained=True).eval().cuda()
 # create example data
 x = torch.ones((1, 3, 512, 512)).cuda()
 
+#get model parameters
 print(sum(p.numel() for p in model.parameters() if p.requires_grad))
 
 # convert to TensorRT feeding sample data as input
